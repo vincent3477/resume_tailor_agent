@@ -4,6 +4,9 @@ from typing import Any
 
 from openai import OpenAI
 
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+MODEL = os.getenv("OPENAI_MODEL", "gpt-5")
+
 """
 THEIRSTACK_API_KEY = os.environ["THEIRSTACK_API_KEY"]
 THEIRSTACK_URL = "https://api.theirstack.com/v1/jobs/search"
@@ -293,31 +296,153 @@ RESUME_DATA = {
     ],
 }
 
-def describe(job_desc):
+def describe_job(job_desc):
+
+
+    
     prompt = f"""
-    You are a job matching expert that is responsible to for parsing the job data extracting the title, description, pay, and location then determine whether the candidate is good match based on their experiences.
+    Your responsibility is to parse the job data extracting title, and description in order to effectivily summarize the important qualification information and what person would resonate with what the company is looking for from the posting.
 
     This is the job descripotion: {job_desc}
-
-    Candidate Data: {RESUME_DATA}
 
     Your answer should:
     - list all required skills (i.e. Python, Azure)
     - list all preferred skills and/ or experiences
-    - discuss the skills the candidate should emphasize to stand out and suggestions to frame their resume to match what the company wants
+    - discuss the skills the candidate should emphasize to stand out
+    - describe what the company is looking for.
+    - describe the company's mission and values
+    - describe what the candidate will be doing.
     - how many years of experience does this job require or seniority if the number of years of experience is not listed
     - if prior job or internship is required
     - include the type 
-    - Suggest of the candidate should apply or not.
 
     Your answer must be in this format:
-    {{"job title": "<title here>", "All required skills": "<required_skills>", "Preferred Skills": "<preferred_skills>", "skills candidate should emphasize":"<what_to_emphasize>", "Years of experience required":"<years_of_experience_required>", "Whether prior internship or job is required": "<yes if strictly says internship or job only, no otherwise>", "suggestion to apply":"yes or no"}}
+    {{"job title": "<title here>", "All required skills": "<required_skills>", "Preferred Skills": "<preferred_skills>", "skills candidate should emphasize":"<what_to_emphasize>", "Years of experience required":"<years_of_experience_required>", "Whether prior internship or job is required": "<yes if strictly says internship or job only, no otherwise>", "what the company is looking for":<what the company is looking for>, "what will the candidate be doing":<what the candidate will do>, "mission and values":<company's mission and values"}}
 
     """
 
+    #response = client.responses.create(
+    #        model=MODEL,
+    #        input=prompt,
+    #    )
 
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+    url = "https://agents.toolhouse.ai/4c85d8d5-601a-47f5-8425-336f522e2445"
+
+    payload = {"message": f"JOB Description: {job_desc}"}
+    api_key = os.environ.get("TOOLHOUSE_API_KEY")
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    print("about to passin in the request, ", payload)
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            return response.text  # This should be a JSON string
+        else:
+            print(f"Failed to query agent. Status code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Error querying agent: {str(e)}")
+        return None
+
+    text = response.output_text
+    return(text)
+
+
+
+def get_candidate_job_fit_evaluation(broken_down_desc):
+    prompt = f"""
+    Your job is to analyze a job posting and return structured signals that guide resume tailoring.
+
+You must determine:
+
+1. What the candidate should highlight
+2. How the resume should be framed
+3. Whether AI/ML, systems, backend, or other domains are required
+4. How to prioritize projects, experience, and skills
+5. What signals make a strong candidate for this role
+6. What should be avoided or de-emphasized
+
+Here is the broken down job description: {broken_down_desc} 
+
+And, here is the candidate's data: {RESUME_DATA}
+
+Return STRICT JSON with fields:
+
+{{
+  "role_family": "",
+  "seniority": "",
+  "company_type": "",
+
+  "domain_requirements": {{
+    "ai_ml": true/false,
+    "systems": true/false,
+    "backend": true/false
+  }},
+
+  "project_preferences": {{
+    "priority_order": [],
+    "must_have_signals": [],
+    "deprioritize": []
+  }},
+
+  "bullet_preferences": {{
+    "emphasize": [],
+    "de_emphasize": []
+  }},
+
+  "skill_strategy": {{
+    "must_include": [],
+    "nice_to_have": [],
+    "avoid": []
+  }},
+
+  "experience_strategy": {{
+    "priority_order": [],
+    "include_conditions": {{}}
+  }},
+
+  "narrative_strategy": {{
+    "core_theme": "",
+    "angle": "",
+    "differentiators": []
+  }},
+
+  "risks": {{
+    "overemphasis": [],
+    "underemphasis": [],
+    "missing": []
+  }}
+}}
+"""
+    
+    
+
+    url = "https://agents.toolhouse.ai/01990a75-2540-47f3-8b10-4bdfbcdc2130"
+
+    payload = {"message": f"Broken Down job Descriotion:{broken_down_desc} \n\n\n User's Data: {RESUME_DATA}"}
+    api_key = os.environ.get("TOOLHOUSE_API_KEY")
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+
+    print("about to passin in the request, ", payload)
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            return response.text  # This should be a JSON string
+        else:
+            print(f"Failed to query agent. Status code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Error querying agent: {str(e)}")
+        return None
 
 
     response = client.responses.create(
@@ -326,52 +451,4 @@ def describe(job_desc):
         )
 
     text = response.output_text
-    print(text)
-
-if __name__ == "__main__":
-    describe("""About the job
-The Company
-
-LUDO ROBOTICS is dedicated to building general-purpose robotic intelligence systems that are robust, adaptive, and capable of handling real-world scenarios. We believe that data-driven machine learning at massive scale is the key to unlocking these capabilities and enabling the widespread deployment of robots across society.
-
-We are a new startup headquartered in Bay Area, California, with an office in Seoul, Korea. Our team spans a wide range of backgrounds and experience, from new graduates to seasoned domain experts. What matters most to us is ownership, speed, and intellectual curiosity - people who take responsibility, move fast, and enjoy thinking deeply about hard problems.
-
-We are supported by a highly advanced AI Center within KRAFTON, a leading global video game company best known for the genre-defining worldwide success PUBG: Battlegrounds. KRAFTON has extensive experience building and operating large-scale, data-rich products, and we have secured investment from them. This gives us strong long-term backing, deep technical partnership opportunities, and access to world-class infrastructure and talent networks as we push robotic intelligence forward.
-
-We are looking for passionate builders who want to explore uncharted territory, take on difficult problems, and ship ambitious, industry-shaping work. You will collaborate across diverse teams as we bring our technology from research into real-world deployment.
-
-THE OPPORTUNITY
-
-As an ML / AI Engineer at Ludo Robotics, you will develop scalable robotics systems that enable robots to operate reliably in the real-world environments. You will work with leading researchers and engineers on state-of-the-art methodologies to design and deploy algorithms and systems that enable robots to interact intelligently and adapt to diverse and complex environments. The ideal candidate has a strong technical background and experience in building practical solutions and driving real impact.
-
-Responsibilities
-
-Lead and contribute to cutting-edge research and engineering problems at the frontier of robotic AI, including approaches and systems that have not been built before.
-Explore and develop new learning methods, architectures, and training strategies for robots facing unseen scenarios.
-Turn research ideas into deployed robot behavior, bridging theory and real-world performance.
-Collaborate with cross-functional teams spanning robotics software, hardware, data, and infrastructure.
-Influence technical direction and system design in a fast-moving startup environment.
-Access large-scale data, compute, and modern ML infrastructure to train and evaluate advanced models.
-Grow through ownership of open-ended problems where solutions are not predefined.
-
-Qualifications
-
-Degree in Computer Science, Electrical Engineering, or related field with focus on Deep Learning or Machine Learning
-Solid understanding of machine learning fundamentals and modern deep learning techniques, with hands-on experience with ML frameworks such as PyTorch or TensorFlow.
-Strong programming skills, primarily in Python, with experience or willingness to work in C++-based robotics environments.
-Comfort working on open-ended, ambiguous problems where requirements and solutions evolve and curiosity and readiness to tackle new technical challenges that may not have established best practices.
-Experience working with real-world data, including noise, edge cases, and imperfect labels.
-Familiarity with robotics concepts such as perception, control, state estimation, or simulation a plus.
-Strong problem-solving skills and the ability to reason about complex systems.
-Ability to collaborate effectively in fast-paced, research-driven environments.
-Clear communication skills and a strong sense of ownership over outcomes.
-
-Reasonable Accommodation
-
-LUDO ROBOTICS is committed to the full inclusion of all qualified individuals. As part of this commitment, the Company will ensure that persons with disabilities are provided reasonable accommodations. If reasonable accommodation is needed to apply for an open position, perform essential job functions, and/or to receive other benefits and privileges of employment, please contact the Operations Team, to begin the interactive process.
-
-EEOC Statement
-
-LUDO ROBOTICS provides equal employment opportunities to all employees and applicants for employment and prohibits discrimination and harassment of any type.
-
-This position may be filled at multiple levels depending on experience, scope, and business need. In California, the expected salary range for this position is $98,000–$305,000. The listed expected salary ranges represent good faith estimates. Actual compensation may vary based on job-related factors including experience, education, skills, performance, and work location. This position is also eligible for equity compensation and a comprehensive benefits package.""")
+    return(text)
