@@ -2,16 +2,6 @@ import json
 import subprocess
 import requests
 import os
-
-
-# Source - https://stackoverflow.com/a/1252164
-# Posted by Thomas Owens, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-03-16, License - CC BY-SA 3.0
-
-import sys
-print(sys.version)
-
-
 from openai import OpenAI
 
 
@@ -456,9 +446,11 @@ Relevant Courses:
 Projects:
 - Select projects according to project_preferences.priority_order.
 - Select 2 to 4 projects.
+- Note that experiences including Lab Assistant and Tutor/ Reader roles do not belong here.
 - Order selected projects from most relevant to least relevant.
 - Prefer projects that match must_have_signals.
 - Deprioritize projects matching deprioritize signals.
+- Include numbers to signify impact whenever possible.
 
 
 Experience:
@@ -523,23 +515,13 @@ Candidate resume data:
     try:
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
-            return response.text  # This should be a JSON string
+            return json.loads(response.text)  # This should be a JSON string
         else:
             print(f"Failed to query agent. Status code: {response.status_code}")
             return None
     except Exception as e:
         print(f"Error querying agent: {str(e)}")
         return None
-
-
-    response = client.responses.create(
-        model=MODEL,
-        input=prompt,
-    )
-
-    text = response.output_text
-    print(text)
-    return json.loads(text)
 
 
 
@@ -675,14 +657,9 @@ def compile_pdf(tex_file):
     )
 
 
-def generate_resume(job_posting, output_name):
+def generate_resume(job_posting, output_name, job_analysis):
     base_tailored = tailor_resume(job_posting, RESUME_DATA, job_analysis)
-    job_analysis = {
-    "job_type": "ai_ml",
-    "needs_systems": True,
-    "needs_backend": False,
-    "needs_ai": True
-    }
+    
 
     limits = get_resume_limits(job_analysis)
 

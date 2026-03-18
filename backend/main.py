@@ -1,4 +1,4 @@
-from tailor_resume import tailor_resume
+from tailor_resume import generate_resume
 from analyze_candidate import describe_job, get_candidate_job_fit_evaluation
 
 RESUME_DATA = {
@@ -237,42 +237,60 @@ RESUME_DATA = {
 def tailor_resume_single_entry(job_posting):
     job_desc = describe_job(job_posting)
     evaluations = get_candidate_job_fit_evaluation(job_desc)
-    tailor_resume(job_posting, RESUME_DATA, evaluations)
+    generate_resume(job_posting, "vsresume", evaluations)
 
 if __name__ == "__main__":
-    entry = """Software Engineering, New Grad – Eventual (San Francisco, CA)
+    entry = """The Role
 
-About Eventual
 
-Eventual enables developers to build the AI systems of the future by making multi-modal data and models work together seamlessly. Every breakthrough AI application—from foundation models to autonomous vehicles relies on processing massive volumes of images, video, and complex data. But today’s data platforms (like Databricks and Snowflake) were built for spreadsheet-like analytics, not the petabytes of multimodal data that power AI.
+Software Engineer, Agentic AI Systems (New Grad)
 
-Eventual was founded in 2022 to change that. Our mission is to make working with any kind of data—images, video, audio, text—as intuitive as working with tables, and powerful enough to scale to production workloads. Our open-source engine, Daft, is purpose-built for real-world AI systems: coordinating with external APIs, managing GPU clusters, and handling failures that traditional engines can’t.
+Are you a software engineer who has honed your craft through internships, research, and/or academic projects, and are looking to apply your skills at the cutting edge of AI agents? This may be the role for you.
 
-Daft already powers critical workloads at companies like Amazon, Mobileye, Together AI, and CloudKitchens. Backed by Y Combinator, Caffeinated Capital, Array.vc, and top angels from the co-founders of Databricks and Perplexity, we’re just getting started—and we’d love for you to be part of it.
+As a software engineer on our “agent lab” Natural Language Understanding team, you will play an important part in our mission: to advance the frontier of work that can be entrusted to agents to perform reliably at scale. You will have the opportunity to contribute to the evolution of the Moveworks AI Assistant platform in several of the following areas: agent orchestration, sandboxed file systems and code execution, latency optimization, agent memory, LLM self-reflection and improvement, execution environment simulation, enterprise knowledge graphs, and multimodal I/O.
 
-Please note: This is a full time job is based in our San Francisco office (Mission District). We value in-person collaboration and ask our engineers to be in the office at least 4 days a week.
+You will have all the tools of modern enterprise AI at your disposal, including best-in-class LLMs from providers like OpenAI. Our team indexes on moving fast on scalable infrastructure, solving challenging product and engineering problems, and pushing the envelope of value provided to customers. If you are looking to do impactful work with a bright, dedicated, and impact-driven team alongside you, we’d love to have a conversation.
 
-Your Role
+What You Will Do:
 
-As a Software Engineering New Grad, you’ll work alongside our engineers to contribute to Eventual’s core products and open-source engine. You’ll gain hands-on experience building distributed data systems and products, while learning how to design, implement, and test features that support real-world AI and ML workloads.
+Take on exciting engineering challenges (see areas listed above) to build and evolve capable AI agent systems that are reliable in every sense of the word
+Implement frontier AI algorithms and architectures and help productionize them at scale, with support from senior engineers
+Use the latest advances in machine learning, LLMs, and AI agents to enhance our products and create delightful user experiences
+Execute on projects to create lasting value for all our customers
+Hone your craft in writing robust, extensible, readable, and performant code
+Partner with subject matter experts across the company including in machine learning, security, product, user experience, and customer success, to learn from each other and build the best enterprise AI product the world has ever seen
+Learn from and collaborate with senior engineers and machine learning engineers to build world-class AI systems
+What You Bring To The Table:
+Strong programming fundamentals and experience building software through coursework, projects, internships, and/or research
+Ability to think and communicate clearly about engineering problems and systems
+Eagerness to learn, give and receive feedback, and hold yourself to a high standard of operational excellence
+Readiness to hit the ground running in a Mac development environment, programming in Python, Golang, and/or Java
+Desire to ship at a startup pace with a high degree of ownership
+Attention to detail
+Drive to ship product improvements with production-grade code (with guidance and iterative development)
+Strong appetite for continuous incremental wins and completing challenging projects fast
+High level of curiosity about engineering outside of immediate discipline and ongoing desire to learn and stay at the cutting edge of applied AI
+Nice To Have:
 
-You’ll get mentorship from our team (ex-Databricks, AWS, Nvidia, Tesla, GitHub Copilot, Pinecone) and the opportunity to make meaningful contributions that reach production.
+Internship or research experience building production-quality software
+Experience building with LLMs, particularly in iterating on prompts, on model selection, on cognitive architecture design, and on latency/correctness tradeoffs in a data-driven way
+Hands-on experience with one or more stages of a machine learning problem-solving lifecycle, such as experiment setup, dataset curation, model training, offline evaluation and error analysis, deployment, and online evaluation
+Experience in AI fairness, privacy, permission controls, safety, and/or security
+*Our compensation package includes a market competitive salary, equity for all full time roles, exceptional benefits, and, for applicable roles, commissions or bonus plans. 
+Ultimately, in determining pay, final offers may vary from the amount listed based on geography, the role’s scope and complexity, the candidate’s experience and expertise, and other factors.
 
-Key Responsibilities
+Moveworks Is An Equal Opportunity Employer
+*Moveworks is proud to be an equal opportunity employer. We provide employment opportunities without regard to age, race, color, ancestry, national origin, religion, disability, sex, gender identity or expression, sexual orientation, veteran status, or any other characteristics protected by law.
 
-Contribute to building features in Eventual’s distributed query engine.
-Work on developing Eventual’s cloud service.
-Write clean, maintainable code with guidance from senior engineers.
-Collaborate with the team to design and implement solutions for real-world data challenges.
-Assist with testing, debugging, and documenting core system components.
+Who We Are 
+Moveworks is the Agentic AI Assistant platform that empowers the entire workforce.
 
-What We Look For
+Our platform enables employees to converse with all of their business systems through natural language to quickly find answers and automate tasks. Powered by the world's most advanced LLMs, our proprietary models, and a sophisticated Agentic AI platform, we're transforming how work gets done by allowing AI to take initiative, streamline complex workflows, and continuously learn and adapt.
 
-Within 1 year of graduating from University
-Strong programming skills in Python and/or Rust.
-Interest in distributed systems, databases, or data infrastructure.
-Familiarity with cloud technologies (AWS, GCP, or Azure) is a plus.
-Excitement to learn from a fast-paced startup environment and contribute to real-world systems.
+Moveworks is trusted by over 5.5 million employees at more than 350 of the world’s largest companies, including 10% of the Fortune 500, to automate everyday tasks and streamline business operations. Recognized on the Forbes Cloud 100 and AI 50 lists, Moveworks was also named one of Fast Company’s 2025 Most Innovative Companies and Inc’s Best in Business, in the Best in Innovation category. Moveworks was also recognized at Microsoft’s 2025 Partner of the Year and in 2024, received the AI Breakthrough Award.
 
-Compensation Range: $120K - $150K"""
+In December 2025, Moveworks was acquired by ServiceNow, marking a pivotal milestone in our journey to create a single front door to work for all business systems. By combining ServiceNow’s leading workflow automation with Moveworks’ Reasoning Engine and natural language capabilities, we deliver the AI platform for every person and every workflow. Built to go beyond basic summaries to deliver meaningful business impact. Together, our AI acts across enterprise systems to turn conversations into completed work.
+
+By joining our team, you’ll be at the forefront of the AI transformation, backed by the global scale of ServiceNow and the agility of a high-growth company. We are looking for world-class talent to help us extend agentic AI to every employee across every corner of the business.
+"""
     tailor_resume_single_entry(entry)

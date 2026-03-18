@@ -1,7 +1,7 @@
 import os
 import requests
 from typing import Any
-
+import json
 from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -348,10 +348,6 @@ def describe_job(job_desc):
         print(f"Error querying agent: {str(e)}")
         return None
 
-    text = response.output_text
-    return(text)
-
-
 
 def get_candidate_job_fit_evaluation(broken_down_desc):
     prompt = f"""
@@ -436,19 +432,10 @@ Return STRICT JSON with fields:
     try:
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
-            return response.text  # This should be a JSON string
+            return json.loads(response.text)
         else:
             print(f"Failed to query agent. Status code: {response.status_code}")
             return None
     except Exception as e:
         print(f"Error querying agent: {str(e)}")
         return None
-
-
-    response = client.responses.create(
-            model=MODEL,
-            input=prompt,
-        )
-
-    text = response.output_text
-    return(text)
